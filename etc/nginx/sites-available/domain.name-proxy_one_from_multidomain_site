@@ -1,0 +1,35 @@
+proxy_cache_path /dev/shm/nginx/proxy_cache_path_austin.cl.thd.cc/ levels=2:2 keys_zone=austin.cl.thd.cc:128m inactive=12h max_size=512M;
+
+server {
+    proxy_cache austin.cl.thd.cc;
+
+    server_name  www.austin.cl.thd.cc austin.cl.thd.cc;
+    listen   80;
+
+    index index.php  index.html;
+    charset utf-8;
+    root  /home/webuser/public_html/;
+
+    access_log  /home/webuser/log/austin.cl.thd.cc.access.log;
+    error_log /home/webuser/log/austin.cl.thd.cc.error.log warn;
+
+#    auth_basic            "Restricted";
+#    auth_basic_user_file    conf.d/htpasswd_austin.cl.thd.cc;
+
+   location / {
+       proxy_pass http://wp.thd.cc:80;
+       proxy_redirect http://wp.thd.cc/ /;
+       proxy_set_header Host $host;
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       proxy_set_header X-Real-IP $remote_addr;
+   }
+
+    location ~ /\.ht {
+        deny  all;
+    }
+    location ~ /\.svn {
+        deny  all;
+    }
+
+}
+
